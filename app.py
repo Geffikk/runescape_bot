@@ -27,6 +27,7 @@ try:
     parser.add_argument('--action', help='train or run objective', type=str)
     args = parser.parse_args()
 except:
+    args = None
     exit(0)
 
 if __name__ == "__main__":
