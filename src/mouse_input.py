@@ -1,6 +1,8 @@
 import os
 import time
 import json
+from pathlib import Path
+
 from pynput import mouse
 
 
@@ -27,7 +29,7 @@ class MouseInput:
                 "time": time.time()
             })
 
-            self.total_recordings +=1
+            self.total_recordings += 1
 
             if self.n_recordings:
                 if self.total_recordings >= self.n_recordings:
@@ -40,9 +42,9 @@ class MouseInput:
 
     def save(self):
         data = json.dumps(self.data_store)
-        path = os.path.join(os.getenv('DATA_DIR'), os.getenv('OBJECTIVE_DIR'), self.objective + ".json")
-        if not os.path.exists(os.path.join(os.getenv('DATA_DIR'), os.getenv('OBJECTIVE_DIR'))):
-            os.makedirs(os.path.join(os.getenv('DATA_DIR'), os.getenv('OBJECTIVE_DIR')))
+        path = Path("data", "objectives", f"{self.objective}.json")
+        if not path.exists():
+            os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w+") as file:
             file.write(data)
 

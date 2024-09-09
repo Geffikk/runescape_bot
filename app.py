@@ -3,6 +3,7 @@ import argparse
 from dotenv import load_dotenv
 
 from src.bot import Bot
+from src.combat import Combat
 from src.mouse_input import MouseInput
 
 import subprocess
@@ -31,6 +32,14 @@ except:
     exit(0)
 
 if __name__ == "__main__":
+    #MouseInput("recoil_enchant", 200)
+
+    #bot = Bot("recoil_enchant.json", n_loops=200)
+    #bot.farm()
+
+    kokot = Combat()
+    kokot.farm()
+
     if args.action == "train":
         MouseInput(args.name, args.n_times)
 
