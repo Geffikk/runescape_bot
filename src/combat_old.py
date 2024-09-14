@@ -38,23 +38,23 @@ class Combat:
 
                 #mob_cords = self.find_color_in_screen()
                 #mob_name = screen.locate_on_screen(f'{IMAGES_PATH}/mob.png', confidence=0.6)
-                attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/locate_catablepon.png', confidence=0.8)
+                attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/locate_minotaur.png', confidence=0.8)
 
                 if attack_box:
                     pyautogui.click(button='right')
-                    attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/attack_catablepon.png', confidence=0.8)
+                    attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/attack_minotaur.png', confidence=0.8)
 
                     if attack_box:
                         pyautogui.moveTo(attack_box)
                         pyautogui.click(button='left')
                         time.sleep(random.uniform(1.0, 1.3))
 
-                        stack_value = screen.locate_center_on_screen(f'{IMAGES_PATH}/locked_mob.png', confidence=0.9)
+                        stack_value = screen.locate_center_on_screen(f'{IMAGES_PATH}/locked_mob.png', confidence=0.80)
                         if stack_value:
-                            replenish_health = self.should_replenish_health()
+                            replenish_health = self.replenish_health()
 
                             while True:
-                                stack_value = screen.locate_center_on_screen(f'{IMAGES_PATH}/locked_mob.png', confidence=0.9)
+                                stack_value = screen.locate_center_on_screen(f'{IMAGES_PATH}/locked_mob.png', confidence=0.80)
 
                                 if stack_value is None:
                                     break
@@ -64,10 +64,15 @@ class Combat:
                             break
 
             time.sleep(random.lognormvariate(0.4, 0.2))
-            self.loot_arrows(['adamant', 'mithril', 'iron'])
+            self.loot_arrows(['adamant', 'iron'])
 
             if replenish_health:
-                self.feed_yourself()
+                pass
+                #food = screen.locate_center_on_screen(f'{IMAGES_PATH}/cooked_meat.png', confidence=0.70)
+                #pyautogui.moveTo(food)
+                #pyautogui.click(button='left')
+                #time.sleep(random.uniform(0.5, 1.0))
+                #replenish_health = False
 
             mob_counter += 1
             if mob_counter % pickup_on == 0:
@@ -77,23 +82,11 @@ class Combat:
 
             #print("a")
 
-    @classmethod
-    def feed_yourself(cls):
-        foods = ['cooked_meat', 'salmon']
-
-        for food in foods:
-            food_location = screen.locate_on_screen(f'{IMAGES_PATH}/{food}.png', confidence=0.95)
-
-            if food_location:
-                time.sleep(random.uniform(0.5, 1.0))
-                pyautogui.moveTo(food_location)
-                pyautogui.click(button='left')
-                time.sleep(random.uniform(0.5, 1.0))
-                break
 
     @classmethod
-    def should_replenish_health(cls):
-        health_bar = screen.locate_on_screen(f'{IMAGES_PATH}/health_bar.png', confidence=0.85)
+    def replenish_health(cls):
+        health_bar = screen.locate_on_screen(f'{IMAGES_PATH}/health_bar.png', confidence=0.6)
+
         if health_bar:
             return False
 
@@ -168,6 +161,7 @@ class Combat:
 
                 time.sleep(random.uniform(0.5, 1))
 
+
     @classmethod
     def locate_loot_window_region(cls):
         loot_window_header = screen.locate_on_screen(f'{IMAGES_PATH}/loot_window_header.png', confidence=0.8)
@@ -186,7 +180,7 @@ class Combat:
         screenshot1 = cv2.cvtColor(screenshot1, cv2.COLOR_BGR2GRAY)
         screenshot1 = cv2.GaussianBlur(screenshot1, (21, 21), 0)
 
-        time.sleep(0.2)
+        time.sleep(0.1)
 
         # Capture the second frame from the screen
         screenshot2 = np.array(SCT.grab(MONITOR))
@@ -204,7 +198,7 @@ class Combat:
         objects = []
         for contour in contours:
             print(cv2.contourArea(contour))
-            if cv2.contourArea(contour) > 400 and cv2.contourArea(contour) > 1500:
+            if cv2.contourArea(contour) < 500:
                 continue
             x, y, w, h = cv2.boundingRect(contour)
 
@@ -212,7 +206,52 @@ class Combat:
             x_center = x + MONITOR["left"] + w // 2
             y_center = y + MONITOR["top"] + h // 2
 
-            if w > 30 and h > 30:
+            if w > 50 and h > 50:
                 objects.append((x_center, y_center))
 
         return objects
+
+    @classmethod
+    def capture_screen(cls):
+        """Capture the screen using mss"""
+        with mss.mss() as sct:
+            # Capture the screen (monitor 1)
+            screenshot = np.array(sct.grab(MONITOR))
+            cv2.imwrite('screenshot.png', screenshot)
+            return screenshot
+
+    def find_color_in_screen(self):
+        bgr_color = np.array([255, 0, 255])  # Lower bound for purple
+
+        # Convert the provided BGR color to HSV
+        bgr_color_np = np.uint8([[bgr_color]])  # Convert the BGR color to NumPy array
+        hsv_color = cv2.cvtColor(bgr_color_np, cv2.COLOR_BGR2HSV)[0][0]
+
+        # Define a range around the color (tolerance can be adjusted)
+        lower_color = np.array([hsv_color[0] - 10, 100, 100])  # Adjust hue range
+        upper_color = np.array([hsv_color[0] + 10, 255, 255])
+
+        """Find the specified color on the screen"""
+        # Capture the screen
+        screen_img = self.capture_screen()
+
+        # Convert the image to HSV for better color detection
+        hsv_image = cv2.cvtColor(screen_img, cv2.COLOR_BGR2HSV)
+
+        cv2.imwrite('hsv_image.png', hsv_image)
+
+        # Create a mask for the desired color range
+        mask = cv2.inRange(hsv_image, lower_color, upper_color)
+
+        # Find contours of the masked area
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # If contours are found, return the bounding box of the first one
+        if contours:
+            # filter h < 50 and w < 50
+            contours = [contour for contour in contours if cv2.boundingRect(contour)[2] > 30 and cv2.boundingRect(contour)[3] > 30]
+
+            x, y, w, h = cv2.boundingRect(contours[0])
+            return (x + 10, y + 5, w, h)
+        else:
+            return None
