@@ -9,7 +9,7 @@ import pytesseract
 
 from src.utils import screen
 
-IMAGES_PATH = '/Users/mgeffert/webdev/runescape_bot/data/images/combat'
+IMAGES_PATH = 'C:\\Projects\\runescape_bot\\data\\images\\combat'
 
 SCT = mss.mss()
 MONITOR = SCT.monitors[1]
@@ -24,12 +24,30 @@ class Combat:
 
     def farm(self):
         # click on window to focus
-        pyautogui.click(x=MONITOR["left"] + (MONITOR["width"] // 2), y=MONITOR["top"] + (MONITOR["height"] // 2))
+        #pyautogui.click(x=MONITOR["left"] + (MONITOR["width"] // 2), y=MONITOR["top"] + (MONITOR["height"] // 2))
 
         mob_counter = 0
         pickup_on = random.uniform(2, 4)
         replenish_health = False
+        was_pause = 0
         while True:
+            waiting_time = random.lognormvariate(0.0, 1.0)
+
+            if waiting_time > 15:
+                waiting_time = random.uniform(12, 15)
+
+            if waiting_time > 10:
+                was_pause = 0
+
+            was_pause += 1
+
+            if was_pause == 11:
+                print("PAUSE")
+                was_pause = 0
+                waiting_time = random.uniform(13, 16)
+
+            print(waiting_time)
+            time.sleep(waiting_time)
             moving_objects_cords = self.locate_moving_objects()
 
             for moving_object_cords in moving_objects_cords:
@@ -38,11 +56,22 @@ class Combat:
 
                 #mob_cords = self.find_color_in_screen()
                 #mob_name = screen.locate_on_screen(f'{IMAGES_PATH}/mob.png', confidence=0.6)
-                attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/locate_catablepon.png', confidence=0.8)
+
+                #mobs = ['locate_ankou.png', 'locate_ghost.png']
+                mobs = ['locate_catablepon.png']
+                attack_box = None
+                for mob in mobs:
+                    attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/{mob}', confidence=0.8)
+                    if attack_box:
+                        break
 
                 if attack_box:
                     pyautogui.click(button='right')
-                    attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/attack_catablepon.png', confidence=0.8)
+                    attack_mobs = ['attack_catablepon.png']
+                    for mob in attack_mobs:
+                        attack_box = screen.locate_center_on_screen(f'{IMAGES_PATH}/{mob}', confidence=0.8)
+                        if attack_box:
+                            break
 
                     if attack_box:
                         pyautogui.moveTo(attack_box)
@@ -186,7 +215,7 @@ class Combat:
         screenshot1 = cv2.cvtColor(screenshot1, cv2.COLOR_BGR2GRAY)
         screenshot1 = cv2.GaussianBlur(screenshot1, (21, 21), 0)
 
-        time.sleep(0.2)
+        time.sleep(0.1)
 
         # Capture the second frame from the screen
         screenshot2 = np.array(SCT.grab(MONITOR))
@@ -203,7 +232,7 @@ class Combat:
 
         objects = []
         for contour in contours:
-            print(cv2.contourArea(contour))
+            #print(cv2.contourArea(contour))
             if cv2.contourArea(contour) > 400 and cv2.contourArea(contour) > 1500:
                 continue
             x, y, w, h = cv2.boundingRect(contour)
@@ -212,7 +241,11 @@ class Combat:
             x_center = x + MONITOR["left"] + w // 2
             y_center = y + MONITOR["top"] + h // 2
 
+            #if w > 30 and h > 30:
+            #    objects.append((x_center, y_center))
+
             if w > 30 and h > 30:
                 objects.append((x_center, y_center))
+
 
         return objects
