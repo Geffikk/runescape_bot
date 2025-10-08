@@ -1,1 +1,0 @@
-python3 app.py --name="recoil_enchant" --n_times=200 --action="train"

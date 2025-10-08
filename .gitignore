@@ -1,0 +1,8 @@
+data/negative
+data/positive
+data/negative_raw
+data/positive_raw
+.idea
+__pycache__
+models
+.DS_Store
