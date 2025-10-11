@@ -6,3 +6,4 @@ data/positive_raw
 __pycache__
 models
 .DS_Store
+tutorials

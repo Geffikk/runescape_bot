@@ -1,0 +1,34 @@
+ARROWS:
+  type: arrow
+  img_representations:
+    - arrow-s
+    - arrow-m
+    - arrow-l
+    - arrow-xl
+  value:
+    - mithril_arrow
+    - adamant_arrow
+    #- rune_arrow
+
+#BONES:
+#  type: bone
+#  img_representations:
+#    - bone
+#  value:
+#    - bone
+#    - big_bone
+
+COIN:
+    type: coin
+    img_representations:
+        #- coin-s
+        - coin-m
+        #- coin-l
+        #- coin-xl
+    value:
+        - coin
+BONES: bones
+
+FIRE_RUNE: fire_rune
+WATER_RUNE: water_rune
+LAW_RUNE: law_rune

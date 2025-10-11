@@ -289,7 +289,6 @@ data/negative/1759943192.309629.jpg
 data/negative/1759943160.95569.jpg
 data/negative/1759943190.731241.jpg
 data/negative/1759697678.859415.jpg
-data/negative/neg.txt
 data/negative/1759697418.617722.jpg
 data/negative/1759697553.7401228.jpg
 data/negative/1759697555.426514.jpg
