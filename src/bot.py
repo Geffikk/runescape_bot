@@ -1,11 +1,7 @@
-import random
-
 import cv2 as cv
-import numpy as np
 import pyautogui
 from time import sleep, time
 from threading import Thread, Lock
-from math import sqrt
 
 from src.states.bot import BotState
 from src.states.bury_bones import BuryBonesState
