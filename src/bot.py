@@ -69,7 +69,6 @@ class AlbionBot:
         self.lock.acquire()
         self.targets = targets
         self.search_state.update_targets(self.targets)
-        self.fight_state.update_targets(self.targets)
         self.lock.release()
 
     def update_screenshot(self, screenshot):

@@ -65,7 +65,7 @@ class LootState:
     def loot_items(self, items):
         sleep(0.5)  # wait a second to let the loot appear
         # shuffle items to loot arrows first (since they stack)
-        random.shuffle(items)
+        #random.shuffle(items)
 
         for item in items:
             while True:
@@ -129,7 +129,7 @@ class LootState:
                 if arrow_template is None:
                     continue
 
-                result = self.find_item_on_screen(lootbarshot, arrow_template, 0.7)
+                result = self.find_item_on_screen(lootbarshot, arrow_template, 0.6)
                 logger.warning(f"Loot template: {img} is visible with match confidence: {result}")
                 if not result["found"]:
                     continue
