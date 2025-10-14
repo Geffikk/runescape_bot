@@ -184,7 +184,6 @@ class LootState:
         backpack_coordinates = self.locate_hud(self.BACKPACK_HEADER, self.BACKPACK_FOOTER)
         x, y, w, h = backpack_coordinates
         backpackshot = self.screenshot[y:y + h, x:x + w]
-        cv.imwrite("empty_slot.png", backpackshot)
 
         res = cv.matchTemplate(backpackshot, self.EMPTY_SLOT, cv.TM_CCOEFF_NORMED)
         _, max_val, _, _ = cv.minMaxLoc(res)
